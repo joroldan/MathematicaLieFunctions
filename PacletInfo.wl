@@ -1,11 +1,8 @@
-(* ::Package:: *)
-
 PacletObject[
     <|
         "Name" -> "LieFunctions",
-        "Version" -> "0.0.1",
-        "WolframVersion" -> "13.+",
-        "Creator" -> "Jorge Rold\[AAcute]n-L\[OAcute]pez",
+        "Version" -> "0.8.0",
+        "WolframVersion" -> "12.+",
         "Extensions" ->
             {
                 {

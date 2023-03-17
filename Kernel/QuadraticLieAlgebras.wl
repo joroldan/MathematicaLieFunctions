@@ -3,12 +3,12 @@
 BeginPackage["LieFunctions`QuadraticLieAlgebras`"]
 
 
-GetQuadraticForm::usage = "GetQuadraticForm[var, adjointList] gets all posible quadratic forms for the given algebra defined by adjointList using variable var.";
+GetSymmetricInvariantBilinearForm::usage = "GetSymmetricInvariantBilinearForm[var, adjointList] gets all posible quadratic forms for the given algebra defined by adjointList using variable var.";
 SkewSymmetricRespectToQ::usage="SkewSymmetricRespectToQ[matrix1, matrix2]";
 SkewSymmetricRespectToQFast::usage="SkewSymmetricRespectToQ[matrix1, matrix2]";
 InvariantQ::usage="InvariantQ[matrix, adjointList] checks if matrix is invariant with respect to the Lie bracket defined by the adjoint list given in adjointList.";
-LinearQuadraticFormQ::usage="LinearQuadraticFormQ[matrix, adjointList] checks if matrix is symmetric and invariant respect adjointList.";
-LinearQuadraticFormQFast::usage="LinearQuadraticFormQ[matrix, adjointList] checks if matrix is symmetric and invariant respect adjointList.";
+InvariantBilinearFormQ::usage="InvariantBilinearFormQ[matrix, adjointList] checks if matrix is invariant respect adjointList.";
+InvariantBilinearFormQFast::usage="InvariantBilinearFormQ[matrix, adjointList] checks if matrix is invariant respect adjointList.";
 
 
 Begin["Private`"]
@@ -16,8 +16,8 @@ Needs["LieFunctions`Matrices`"]
 Needs["LieFunctions`General`"]
 
 
-Clear[GetQuadraticForm];
-GetQuadraticForm[var_,adjointList_]:=Module[
+Clear[GetSymmetricInvariantBilinearForm];
+GetSymmetricInvariantBilinearForm[var_,adjointList_]:=Module[
 {sAdjointList = SortBy[adjointList,NumberOfVariables],
 dim,mat,varList,cond,matI},
 dim=Length[sAdjointList];
@@ -108,57 +108,57 @@ InvariantQ::nAdjoint = LieFunctions`General`DerivationQ::nAdjoint;
 InvariantQU[matrix_, adjointList_] := Reduce[And @@ Table[SkewSymmetricRespectToQU[
   matrix, adjoint], {adjoint, adjointList}]];
 
-Clear[LinearQuadraticFormQ, LinearQuadraticFormQU, LinearQuadraticFormQUNR];
+Clear[InvariantBilinearFormQ, InvariantBilinearFormQU, InvariantBilinearFormQUNR];
 
-LinearQuadraticFormQ[matrix_, adjointList_] := LinearQuadraticFormQU[matrix, adjointList] /;
+InvariantBilinearFormQ[matrix_, adjointList_] := InvariantBilinearFormQU[matrix, adjointList] /;
 And[
   If[MatrixQ[matrix],
     True,
-    Message[LinearQuadraticFormQ::nMatrix, matrix, 1]; False
+    Message[InvariantBilinearFormQ::nMatrix, matrix, 1]; False
   ],
   If[CubicMatrixQ[adjointList],
     True,
-    Message[LinearQuadraticFormQ::nCubic, matrix, 1]; False
+    Message[InvariantBilinearFormQ::nCubic, matrix, 1]; False
   ],
   If[Length[matrix] == Length[adjointList],
     True,
-    Message[LinearQuadraticFormQ::nLength, matrix, 1, adjointList, 2]
+    Message[InvariantBilinearFormQ::nLength, matrix, 1, adjointList, 2]
       ; False
   ],
   If[AdjointListQ[adjointList],
     True,
-    Message[LinearQuadraticFormQ::nAdjoint, adjointList, 3]; False
+    Message[InvariantBilinearFormQ::nAdjoint, adjointList, 3]; False
   ]
 ];
 
-LinearQuadraticFormQFast[matrix_, adjointList_] := LinearQuadraticFormQUNR[matrix, adjointList] /;
+InvariantBilinearFormQFast[matrix_, adjointList_] := InvariantBilinearFormQUNR[matrix, adjointList] /;
 And[
   If[MatrixQ[matrix],
     True,
-    Message[LinearQuadraticFormQ::nMatrix, matrix, 1]; False
+    Message[InvariantBilinearFormQ::nMatrix, matrix, 1]; False
   ],
   If[CubicMatrixQ[adjointList],
     True,
-    Message[LinearQuadraticFormQ::nCubic, matrix, 1]; False
+    Message[InvariantBilinearFormQ::nCubic, matrix, 1]; False
   ],
   If[Length[matrix] == Length[adjointList],
     True,
-    Message[LinearQuadraticFormQ::nLength, matrix, 1, adjointList, 2]
+    Message[InvariantBilinearFormQ::nLength, matrix, 1, adjointList, 2]
       ; False
   ],
   If[AdjointListQ[adjointList],
     True,
-    Message[LinearQuadraticFormQ::nAdjoint, adjointList, 3]; False
+    Message[InvariantBilinearFormQ::nAdjoint, adjointList, 3]; False
   ]
 ];
 
-LinearQuadraticFormQFast::nMatrix = LinearQuadraticFormQ::nMatrix = InvariantQ::nMatrix;
-LinearQuadraticFormQFast::nCubic = LinearQuadraticFormQ::nCubic = InvariantQ::nCubic;
-LinearQuadraticFormQFast::nLength = LinearQuadraticFormQ::nLength = InvariantQ::nLength;
-LinearQuadraticFormQFast::nAdjoint = LinearQuadraticFormQ::nAdjoint = InvariantQ::nAdjoint;
+InvariantBilinearFormQFast::nMatrix = InvariantBilinearFormQ::nMatrix = InvariantQ::nMatrix;
+InvariantBilinearFormQFast::nCubic = InvariantBilinearFormQ::nCubic = InvariantQ::nCubic;
+InvariantBilinearFormQFast::nLength = InvariantBilinearFormQ::nLength = InvariantQ::nLength;
+InvariantBilinearFormQFast::nAdjoint = InvariantBilinearFormQ::nAdjoint = InvariantQ::nAdjoint;
 
-LinearQuadraticFormQU[matrix_List, adjointList_List] := Reduce[And[SymmetricQU[matrix], InvariantQU[matrix, adjointList]]];
-LinearQuadraticFormQUNR[matrix_List, adjointList_List] := And[SymmetricQU[matrix], InvariantQU[matrix, adjointList]];
+InvariantBilinearFormQU[matrix_List, adjointList_List] := Reduce[And[SymmetricQU[matrix], InvariantQU[matrix, adjointList]]];
+InvariantBilinearFormQUNR[matrix_List, adjointList_List] := And[SymmetricQU[matrix], InvariantQU[matrix, adjointList]];
 
 
 End[]
