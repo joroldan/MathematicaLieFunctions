@@ -100,10 +100,10 @@ And[
   ]
 ];
 
-InvariantQ::nMatrix = LieFunctions`General`DerivationQ::nMatrix;
-InvariantQ::nCubic = LieFunctions`General`DerivationQ::nCubic;
-InvariantQ::nLength = LieFunctions`General`DerivationQ::nLength;
-InvariantQ::nAdjoint = LieFunctions`General`DerivationQ::nAdjoint;
+InvariantQ::nMatrix  = "Argument `1` at position `2` is not a matrix.";
+InvariantQ::nCubic   = "Argument `1` at position `2` is not a balanced list of matrices.";
+InvariantQ::nLength  = "Argument `1` at position `2` is not of the same lenght as argument `3` at position `4`.";
+InvariantQ::nAdjoint = "Argument `1` at position `2` is not a valid list of adjoint matrices.";
 
 InvariantQU[matrix_, adjointList_] := Reduce[And @@ Table[SkewSymmetricRespectToQU[
   matrix, adjoint], {adjoint, adjointList}]];
@@ -152,9 +152,9 @@ And[
   ]
 ];
 
-InvariantBilinearFormQFast::nMatrix = InvariantBilinearFormQ::nMatrix = InvariantQ::nMatrix;
-InvariantBilinearFormQFast::nCubic = InvariantBilinearFormQ::nCubic = InvariantQ::nCubic;
-InvariantBilinearFormQFast::nLength = InvariantBilinearFormQ::nLength = InvariantQ::nLength;
+InvariantBilinearFormQFast::nMatrix  = InvariantBilinearFormQ::nMatrix  = InvariantQ::nMatrix;
+InvariantBilinearFormQFast::nCubic   = InvariantBilinearFormQ::nCubic   = InvariantQ::nCubic;
+InvariantBilinearFormQFast::nLength  = InvariantBilinearFormQ::nLength  = InvariantQ::nLength;
 InvariantBilinearFormQFast::nAdjoint = InvariantBilinearFormQ::nAdjoint = InvariantQ::nAdjoint;
 
 InvariantBilinearFormQU[matrix_List, adjointList_List] := Reduce[And[SymmetricQU[matrix], InvariantQU[matrix, adjointList]]];

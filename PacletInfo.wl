@@ -1,8 +1,8 @@
 PacletObject[
     <|
         "Name" -> "LieFunctions",
-        "Version" -> "0.8.0",
-        "WolframVersion" -> "12.+",
+        "Version" -> "1.0.0",
+        "WolframVersion" -> "11.+",
         "Extensions" ->
             {
                 {
