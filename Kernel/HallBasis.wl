@@ -13,10 +13,13 @@ HallGrid::usage = "HallGrid[\*StyleBox[\"mat\", FontSlant->Italic],\*StyleBox[\"
 HallGrid[\*StyleBox[\"num\", FontSlant->Italic],\*StyleBox[\"level\", FontSlant->Italic]] applied over a matrix returns it with a grid indicating basis levels."
 
 $HallVar::usage = "$HallVar is the variable used for polynomials in HallBasis package.";
+(*1.1 additions*)
+GetNilpotentIdeal::usage = "GetNilpotentIdeal[\*StyleBox[\"adjointList\", FontSlant->Italic]] given a nilpotent Lie algebra L described by its adjointList returns the ideal I such that L\[TildeTilde]\!\(\*SubscriptBox[\(n\), \(d, t\)]\)/I";
 
 
 Begin["Private`"]
 Needs["LieFunctions`Matrices`"]
+Needs["LieFunctions`General`"]
 
 
 (*
@@ -282,6 +285,33 @@ dim=HallBasisUntilLevelDimension[num,2];
 auxMat=Table[If[Max[i,j]<=num,mat[[i,j]],0],{i,dim},{j,dim}];
 applyAutomorphism[auxMat,num,2][[num+1;;,num+1;;]]];
 getHatFast[mat_]:=Minors[mat,2];
+
+
+(* ::Text:: *)
+(*Version 1.1 - Additions*)
+
+
+(* ::Input::Initialization:: *)
+GetNewProduct[elto_,type_,adjointList_]:=Module[{e1=elto[[1]],e1coords,e2=elto[[2]],e2coords},
+	e1coords=If[e1[[0]]===List,GetNewProduct[e1,type,adjointList],IdentityMatrix[Length[adjointList]][[type+1-e1[[1]]]]];
+	e2coords=If[e2[[0]]===List,GetNewProduct[e2,type,adjointList],IdentityMatrix[Length[adjointList]][[type+1-e2[[1]]]]];
+	Return[GetAdjointFromCoordinates[e1coords,adjointList] . e2coords]
+];
+GetNilpotentIdeal[adjointList_]:=Module[{type=Type[adjointList],hallB,dimH,nilindex=NilpotentQ[adjointList],hallBasisProducts,restrictions,newRestrictions,list},
+	If[Or[type==0,nilindex===False],Return[False]];
+	hallB=HallBasisUntilLevel[type,nilindex];
+	dimH=Length[hallB];
+	hallBasisProducts=Select[hallB,#[[0]]===List&];
+	restrictions=Map[GetNewProduct[#,type,adjointList]&,hallBasisProducts];
+	newRestrictions=Join[restrictions,IdentityMatrix[dimH][[type+1;;]],2];
+	newRestrictions=RowReduce[newRestrictions];
+    list=Select[newRestrictions,#[[;;Length[adjointList]]]==Table[0,Length[adjointList]]&][[All,Length[adjointList]+1;;]];
+    If[Length[list]==0,
+	Print["Your algebra is isomorphic to N_{",type,",",nilindex,"}."],
+	Print["Your algebra is isomorphic to N_{",type,",",nilindex,"}/I with I the linear span with coordinates:"];
+	Return[list]
+ ]
+]
 
 
 End[]

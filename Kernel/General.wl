@@ -19,6 +19,18 @@ AutomorphismQ::usage="AutomorphismQ[m,adjointList] checks if m is an automorphis
 GetAutomorphism::usage="GetAutomorphism[var,adjointList] returns a generic automorphism of algebra given by the adjointList using variable var";
 ChangeAdjointListBasis::usage:="ChangeAdjointListBasis[newBasis,adjointList] from a newBasis matrices which representes the matrix which change coordinates from the new basis to the old one, it changes adjointList to that new basis.";
 AdjointListQuotient::usage:="AdjointListQuotient[complementBasis,idealBasis,adjointList] given a complement and an ideal, it finds the new adjoint in the quoting given by that ideal";
+(*1.1 additions*)
+AdjointImage::usage:="AdjointImage[adjointList] returns the image of a list of adjoints. When the adjoints comes from a basis of the whole algebra L it returns \!\(\*SuperscriptBox[\(L\), \(2\)]\)";
+GetAdjointFromCoordinates::usage:="GetAdjointFromCoordinates[coordinates,adjointList] get the adjoint matrix of an element given its coordinates and the whole adjoints of the corresponding basis of the algebra";
+GetAdjointsFromCoordinates::usage:="GetAdjointsFromCoordinates[coordinatesList,adjointList] get the list adjoint matrices of the element given their coordinates and the whole adjoints of the corresponding basis of the algebra";
+Lk::usage:="Lk[adjointList,k] given the adjoint list of some Lie algebra L, it returns \!\(\*SuperscriptBox[\(L\), \(k\)]\)";
+LPK::usage:="LPK[adjointList,k] given the adjoint list of some Lie algebra L, it returns \!\(\*SuperscriptBox[\(L\), \((k)\)]\)";
+NilpotentQ::usage:="NilpotentQ[adjointList] checks whether a Lie algebra is nilpotent, given its adjointList";
+SolvableQ::usage:="SolvableQ[adjointList] checks whether a Lie algebra is solvable, given its adjointList";
+IdealQ::usage:="IdealQ[coordinatesList,adjointList] checks whether some subspace defined by their generator coordinates is an ideal of the algebra given its adjointList";
+SubalgebraQ::usage:="SubalgebraQ[coordinatesList,adjointList] checks whether some subspace defined by their generator coordinates is a subalgebra of the algebra given its adjointList";
+LHead::usage:="LHead[adjointList] computes a basis of L/\!\(\*SuperscriptBox[\(L\), \(2\)]\) given the adjointList";
+Type::usage:="Type[adjointList] returns the type of a Lie algebra, the dimension of L/\!\(\*SuperscriptBox[\(L\), \(2\)]\)";
 
 
 Begin["Private`"]
@@ -146,6 +158,41 @@ AdjointListQuotient[complementBasis_,idealBasis_,adjointList_]:=Module[{newBasis
 newBasis = Transpose[Join[complementBasis,idealBasis]];
 newAdjointList=ChangeAdjointListBasis[newBasis,adjointList];
 Return[Map[#[[;;n,;;n]]&,newAdjointList[[;;n]]]]];
+
+
+(*1.1 additions*)
+AdjointImage[adjointList_]:=Module[{m=Fold[Join[#1,#2,2]&,adjointList]},RowReduce[Transpose[m]][[;;MatrixRank[m]]]];
+GetAdjointFromCoordinates[coordinates_,adjointList_]:=Plus@@MapThread[#1*#2&,{coordinates,adjointList}];
+GetAdjointsFromCoordinates[coordinatesList_,adjointList_]:=Map[GetAdjointFromCoordinates[#,adjointList]&,coordinatesList];
+
+Lk[adjointList_,k_]:=If[k>1,AdjointImage[GetAdjointsFromCoordinates[Lk[adjointList,k-1],adjointList]],IdentityMatrix[Length[adjointList]]];
+LPK[adjointList_,k_]:=If[k>2,Select[RowReduce[Map[GetAdjointFromCoordinates[#[[1]],adjointList] . #[[2]]&,Subsets[LPK[adjointList,k-1],{2}]]],#!=Array[0&,Length[adjointList]]&],IdentityMatrix[Length[adjointList]]];
+
+NilpotentQ[adjointList_]:=Module[{current = AdjointImage[adjointList],previous=IdentityMatrix[Length[adjointList]],k=2},
+	While[True,
+		If[Length[current]==0,Return[k-1],
+			If[Length[current]==Length[previous], Return[False],
+				previous = current;
+				current=AdjointImage[GetAdjointsFromCoordinates[previous,adjointList]];
+				k=k+1
+]]]];
+
+SolvableQ[adjointList_]:=Module[{current = AdjointImage[adjointList], previous=IdentityMatrix[Length[adjointList]], k=2, aux},
+	While[True,
+		If[Length[current]==0,Return[k-1],
+			If[Length[current]==1,Return[k],
+				If[Length[current]==Length[previous], Return[False],
+					previous = current;
+					aux = Map[GetAdjointFromCoordinates[#[[1]],adjointList] . #[[2]]&,Subsets[current,{2}]];
+					current = Select[RowReduce[aux],#!=Array[0&,Length[adjointList]]&];
+					k = k+1
+]]]]];
+
+IdealQ[coordinatesList_,adjointList_]:=MatrixRank[coordinatesList]==MatrixRank[Join[coordinatesList,AdjointImage[GetAdjointsFromCoordinates[coordinatesList,adjointList]]]];
+SubalgebraQ[coordinatesList_,adjointList_]:=MatrixRank[coordinatesList]==MatrixRank[Join[coordinatesList,Map[GetAdjointFromCoordinates[#[[1]],adjointList] . #[[2]]&,Subsets[coordinatesList,{2}]]]];
+
+LHead[adjointList_]:=Complement[IdentityMatrix[Length[adjointList]],AdjointImage[adjointList]];
+Type[adjointList_]:=Length[adjointList]-Length[AdjointImage[adjointList]];
 
 
 End[]
