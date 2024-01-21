@@ -7,6 +7,6 @@ If you do not have access to an installation of Mathematica, you can use it onli
 ```
 PacletInstall["https://github.com/joroldan/MathematicaLieFunctions/releases/download/v1.1/LieFunctions.paclet"]
 ```
-changing the final part `1.0.0` for whatever version we are interested in. This same command also works in the offline version. The rest works exactly the same.
+changing the part `v1.1` for whatever version we are interested in. This same command also works in the offline version. The rest works exactly the same.
 
 A guide about how you can use the included fuctions is available in the original dissertation (Chapter 6) and it is aimed to be included in the package itself.
