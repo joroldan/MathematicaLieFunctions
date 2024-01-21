@@ -5,8 +5,7 @@ After downloading the package, in order to use it, you need to install and, afte
 
 If you do not have access to an installation of Mathematica, you can use it online at its webpage [https://www.wolframcloud.com](https://www.wolframcloud.com). Here, with a free account, you can still import the package and call every function. However, there is a limit about the computation time available to used in that free mode. This is why the most demanding functions can present problems. Anyway, to install the package, as there is no File menu, the alternative is executing the command:
 ```
-PacletInstall["https://github.com/joroldan/MathematicaLieFunctions/\
-	releases/download/v1.1/LieFunctions.paclet"]
+PacletInstall["https://github.com/joroldan/MathematicaLieFunctions/releases/download/v1.1/LieFunctions.paclet"]
 ```
 changing the final part `1.0.0` for whatever version we are interested in. This same command also works in the offline version. The rest works exactly the same.
 
